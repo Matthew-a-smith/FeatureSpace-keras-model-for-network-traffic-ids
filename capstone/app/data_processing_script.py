@@ -1,12 +1,9 @@
-import subprocess
-import csv
 import json
 import pandas as pd
 import tensorflow as tf
 import os
-# Load the inference model
-ICMP_inference_model = "Models/Inferance/NMAP-inference_model.keras"
-loaded_model = tf.keras.models.load_model(ICMP_inference_model)
+import subprocess
+import csv
 
 def run_tshark_command(pcap_file):
     tshark_cmd = [
@@ -28,11 +25,6 @@ def run_tshark_command(pcap_file):
     process = subprocess.Popen(tshark_cmd, stdout=subprocess.PIPE, universal_newlines=True)
     return process
 
-def make_predictions(data):
-    input_data = {name: tf.convert_to_tensor(data[name].values.reshape(-1, 1)) for name in data.columns if name not in ['ip.src', 'ip.dst']}
-    predictions = loaded_model.predict(input_data)
-    return predictions.flatten()
-
 ########################
 #### First Function ####
 ########################
@@ -53,8 +45,6 @@ def process_pcap_to_csv(pcap_file):
                 
         for line in process.stdout:
             fields = line.strip().split(',')
-            date_str = fields[0]
-            time_str = fields[1]
             row = {"date": fields[0],"time": fields[1], "ip.dst": fields[2], "ip.src": fields[3], "tcp.dstport": fields[4], "tcp.srcport": fields[5], "tcp.window_size_value": fields[6], "tcp.flags": fields[7]}
             writer.writerow(row)
             csvfile.flush()  # Flush the buffer to ensure data is written to the file
@@ -65,6 +55,13 @@ def process_pcap_to_csv(pcap_file):
     # Load the inference model
     ICMP_inference_model = "Models/Inferance/NMAP-inference_model.keras"
     loaded_model = tf.keras.models.load_model(ICMP_inference_model)
+
+    
+    # Function to make prediction on the entire dataset
+    def make_predictions(data):
+        input_data = {name: tf.convert_to_tensor(data[name].values.reshape(-1, 1)) for name in data.columns if name not in ['ip.src', 'ip.dst']}
+        predictions = loaded_model.predict(input_data)
+        return predictions.flatten()
 
     # Load data from CSV file
     data = pd.read_csv(csv_filename)
@@ -82,20 +79,13 @@ def process_pcap_to_csv(pcap_file):
             output_data.append({"Index": index, "Prediction": prediction * 100, "Details": data.iloc[index].to_dict()})
         
     # Write predictions with additional information to a JSON file
-    predictions_filename = pcap_file.split('.')[0] + "_predictions.json"
+    predictions_filename = pcap_file.split('.')[0] + "Nmap_predictions.json"
     with open(predictions_filename, 'w') as f:
         json.dump(output_data, f, indent=4)
 
     print("Predictions above the threshold have been written to", predictions_filename)
 
     return csv_filename, predictions_filename
-
-def get_top_predictions(predictions_file, top_n=10):
-    with open(predictions_file) as f:
-        predictions_data = json.load(f)
-    
-    top_predictions = predictions_data[:top_n]
-    return top_predictions
 
 #########################
 #### second function ####
@@ -127,6 +117,17 @@ def process_pcap_to_csv1(pcap_file):
 
     print("PCAP to CSV conversion completed.")
 
+    # Load the inference model within the function
+    ICMP_inference_model = "Models/Inferance/NMAP-inference_model.keras"
+    loaded_model = tf.keras.models.load_model(ICMP_inference_model)
+
+    
+    # Function to make prediction on the entire dataset
+    def make_predictions(data):
+        input_data = {name: tf.convert_to_tensor(data[name].values.reshape(-1, 1)) for name in data.columns if name not in ['ip.src', 'ip.dst']}
+        predictions = loaded_model.predict(input_data)
+        return predictions.flatten()
+
     # Load data from CSV file
     data = pd.read_csv(csv_filename)
 
@@ -154,22 +155,9 @@ def process_pcap_to_csv1(pcap_file):
     result = [{"ip": ip, "ports_scanned": len(ports)} for ip, ports in unique_ips_ports.items()]
 
     # Write the result to a new JSON file
-    with open('unique_ip_ports_count.json', 'w') as f:
+    with open('data/csv/unique_ip_ports_count--nmap.json', 'w') as f:
         json.dump(result, f, indent=4)
 
     print("Unique IP addresses and number of ports scanned JSON file created successfully.")
 
-    return csv_filename, 'unique_ip_ports_count.json'
-
-def get_top_predictions1(predictions_file, top_n=10):
-    with open(predictions_file) as f:
-        predictions_data = json.load(f)
-    
-    return predictions_data[:top_n]  # Return the top N predictions
-
-# For testing purposes
-if __name__ == "__main__":
-    pcap_file = "example.pcap"  # Replace with your actual PCAP file
-    csv_file, json_file = process_pcap_to_csv(pcap_file)
-    print("CSV file:", csv_file)
-    print("JSON file:", json_file)
+    return csv_filename, 'data/csv/unique_ip_ports_count--nmap.json'

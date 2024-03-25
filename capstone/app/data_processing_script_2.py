@@ -20,6 +20,8 @@ def run_tshark_command(pcap_file):
         "-e", "tcp.srcport",
         "-e", "tcp.window_size_value",
         "-e", "tcp.flags",
+        "-e", "tcp.options.mss_val",
+
     ]
     # Capture TCP traffic using subprocess
     process = subprocess.Popen(tshark_cmd, stdout=subprocess.PIPE, universal_newlines=True)
@@ -81,7 +83,7 @@ def process_pcap_to_csv(pcap_file):
             output_data.append({"Index": index, "Prediction": prediction * 100, "Details": data.iloc[index].to_dict()})
         
     # Write predictions with additional information to a JSON file
-    predictions_filename = pcap_file.split('.')[0] + "_predictions.json"
+    predictions_filename = pcap_file.split('.')[0] + "meter-preter_predictions.json"
     with open(predictions_filename, 'w') as f:
         json.dump(output_data, f, indent=4)
 
@@ -89,23 +91,16 @@ def process_pcap_to_csv(pcap_file):
 
     return csv_filename, predictions_filename
 
-def get_top_predictions(predictions_file, top_n=10):
-    with open(predictions_file) as f:
-        predictions_data = json.load(f)
-    
-    top_predictions = predictions_data[:top_n]
-    return top_predictions
-
 #########################
 #### second function ####
 #########################
 
-def process_pcap_to_csv1(pcap_file):
+def process_pcap_to_csv2(pcap_file):
     process = run_tshark_command(pcap_file)
 
     csv_filename = pcap_file.split('.')[0] + ".csv"
     with open(csv_filename, "w", newline="") as csvfile:
-        fieldnames = ["date", "time", "ip.dst", "ip.src", "tcp.dstport", "tcp.srcport", "tcp.window_size_value", "tcp.flags"]  # Define CSV header field names
+        fieldnames = ["date", "time", "ip.dst", "ip.src", "tcp.dstport", "tcp.srcport", "tcp.window_size_value", "tcp.flags", "tcp.options.mss_val"]  # Define CSV header field names
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         # Write CSV header
@@ -118,7 +113,7 @@ def process_pcap_to_csv1(pcap_file):
             fields = line.strip().split(',')
             date_str = fields[0]
             time_str = fields[1]
-            row = {"date": fields[0],"time": fields[1], "ip.dst": fields[2], "ip.src": fields[3], "tcp.dstport": fields[4], "tcp.srcport": fields[5], "tcp.window_size_value": fields[6], "tcp.flags": fields[7]}
+            row = {"date": fields[0],"time": fields[1], "ip.dst": fields[2], "ip.src": fields[3], "tcp.dstport": fields[4], "tcp.srcport": fields[5], "tcp.window_size_value": fields[6], "tcp.flags": fields[7], "tcp.options.mss_val": fields[8]}
             writer.writerow(row)
             csvfile.flush()  # Flush the buffer to ensure data is written to the file
 
@@ -126,8 +121,8 @@ def process_pcap_to_csv1(pcap_file):
 
     print("PCAP to CSV conversion completed.")
 
-    # Load the inference model
-    ICMP_inference_model = "Models/Inferance/meter-preter-movement-inference_model.keras"
+    # Load the inference model within the function
+    ICMP_inference_model = "Models/Inferance/metasploit-traffic.keras"
     loaded_model = tf.keras.models.load_model(ICMP_inference_model)
 
     
@@ -143,27 +138,32 @@ def process_pcap_to_csv1(pcap_file):
     # Make predictions for the entire dataset
     all_predictions = make_predictions(data)
 
-    # Set thresholds for writing to JSON
+    # Set thresholds for printing and writing to JSON
     write_threshold = 0.95
 
-    # Prepare output data for predictions above threshold
-    output_data = []
+    # Initialize a dictionary to store unique IP addresses and port counts
+    unique_ips_ports = {}
+
+    # Gather unique IP addresses and port numbers from predictions
     for index, prediction in enumerate(all_predictions):
         if prediction > write_threshold:
-            output_data.append({"Index": index, "Prediction": prediction * 100, "Details": data.iloc[index].to_dict()})
-        
-    # Write predictions with additional information to a JSON file
-    predictions_filename = pcap_file.split('.')[0] + "_predictions.json"
-    with open(predictions_filename, 'w') as f:
-        json.dump(output_data, f, indent=4)
+            ip_dst = str(data.at[index, 'ip.dst'])
+            tcp_dstport = int(data.at[index, 'tcp.dstport'])
+            
+            # Add IP address if not present, otherwise increment port count
+            if ip_dst not in unique_ips_ports:
+                unique_ips_ports[ip_dst] = set()
+            unique_ips_ports[ip_dst].add(tcp_dstport)
 
-    print("Predictions above the threshold have been written to", predictions_filename)
+    # Convert dictionary to list of dictionaries
+    result = [{"ip": ip, "ports_scanned": len(ports)} for ip, ports in unique_ips_ports.items()]
 
-    return csv_filename, predictions_filename
+    # Write the result to a new JSON file
+    with open('data/csv/unique_ip_ports_count--metasploit.json', 'w') as f:
+        json.dump(result, f, indent=4)
 
-def get_top_predictions1(predictions_file, top_n=10):
-    with open(predictions_file) as f:
-        predictions_data = json.load(f)
-    
-    top_predictions = predictions_data[:top_n]
-    return top_predictions
+    print("Unique IP addresses and number of ports scanned JSON file created successfully.")
+
+    return csv_filename, 'data/csv/unique_ip_ports_count--metasploit.json'
+
+
