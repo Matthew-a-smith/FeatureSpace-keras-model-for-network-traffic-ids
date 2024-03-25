@@ -6,7 +6,7 @@ from keras.utils import FeatureSpace
 import yaml
 
 # Load configurations from YAML file
-with open("live-model/config.yaml", "r") as yamlfile:
+with open("config.yaml", "r") as yamlfile:
     config = yaml.safe_load(yamlfile)
 
 # Set Keras backend to TensorFlow
@@ -49,11 +49,11 @@ feature_space = FeatureSpace(
                           else FeatureSpace.integer_categorical(num_oov_indices=feature["num_oov_indices"]))
         for feature in feature_space_config["features"]
     },
-    crosses=[
-        FeatureSpace.cross(feature_names=cross["feature_names"], crossing_dim=cross["crossing_dim"])
-        for cross in feature_space_config["crosses"]
-    ],
-    output_mode="concat"
+  #  crosses=[
+  #      FeatureSpace.cross(feature_names=cross["feature_names"], crossing_dim=cross["crossing_dim"])
+  #      for cross in feature_space_config["crosses"]
+  #  ],
+  #  output_mode="concat"
 )
 
 # Adapt the custom layer to your data

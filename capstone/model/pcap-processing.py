@@ -10,15 +10,9 @@ def process_pcap_to_csv(pcap_file, csv_file):
         "-E", "header=y",  # Add header to output
         "-T", "fields",  # Output fields
         "-E", "separator=,",  # CSV separator
-        "-e", "frame.time",  # Add frame time
-        "-e", "ip.dst",
-        "-e", "ip.src",
-        "-e", "tcp.dstport",
-        "-e", "tcp.srcport",
         "-e", "tcp.window_size_value",
         "-e", "tcp.flags",
-        "-e", "tcp.checksum",
-
+        "-e", "tcp.options.mss_val",
     ]
 
     # Capture TCP traffic using subprocess
@@ -26,7 +20,7 @@ def process_pcap_to_csv(pcap_file, csv_file):
 
     # Open CSV file for writing
     with open(csv_file, "w", newline="") as csvfile:
-        fieldnames = ["date", "time", "ip.dst", "ip.src", "tcp.dstport", "tcp.srcport", "tcp.window_size_value", "tcp.flags", "tcp.checksum"]  # Define CSV header field names
+        fieldnames = ["tcp.window_size_value", "tcp.flags", "tcp.options.mss_val"]  # Define CSV header field names
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         # Write CSV header
@@ -37,12 +31,11 @@ def process_pcap_to_csv(pcap_file, csv_file):
                 
         for line in process.stdout:
             fields = line.strip().split(',')
-            date_str = fields[0]
-            time_str = fields[1]
-            row = {"date": fields[0],"time": fields[1], "ip.dst": fields[2], "ip.src": fields[3], "tcp.dstport": fields[4], "tcp.srcport": fields[5], "tcp.window_size_value": fields[6], "tcp.flags": fields[7], "tcp.checksum": fields[8]}
+            # Fill empty fields with 0
+            fields = [field if field else "0" for field in fields]
+            row = {"tcp.window_size_value": fields[0], "tcp.flags": fields[1], "tcp.options.mss_val": fields[2]}
             writer.writerow(row)
             csvfile.flush()  # Flush the buffer to ensure data is written to the file
-
 
     # Close the subprocess after capturing is done
     process.terminate()
@@ -50,7 +43,6 @@ def process_pcap_to_csv(pcap_file, csv_file):
     print("PCAP to CSV conversion completed.")
 
 if __name__ == "__main__":
-    pcap_file = "smb-connection.pcap"  # Replace with your pcap file path
-    csv_file = "smb-connection.csv"   # Specify the output CSV file path
+    pcap_file = "mixed-normal-march10.pcap"  # Replace with your pcap file path
+    csv_file = "mixed-normal-march10.csv"   # Specify the output CSV file path
     process_pcap_to_csv(pcap_file, csv_file)
-

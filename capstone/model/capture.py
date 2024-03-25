@@ -6,23 +6,23 @@ def capture_http_traffic():
     # Define the tshark command to capture HTTP traffic and output as CSV
     tshark_cmd = [
         "tshark",
-        "-i", "wlan0",  # Specify the interface you want to capture traffic on
-        "-Y", "http",  # Filter for HTTP traffic
+        "-i", "eth0",  # Specify the interface you want to capture traffic on
+        "-Y", "tcp",      # Filter for TCP traffic
         "-E", "header=y",  # Add header to output
         "-T", "fields",  # Output fields
         "-E", "separator=,",  # CSV separator
-        "-e", "frame.time",  # Add frame time
-        "-e", "ip.dst",
-        "-e", "ip.src",
-        "-e", "http.request.method",  # Include HTTP request method
-        "-e", "http.request.uri",  # Include HTTP request URI
-        "-e", "http.response.code",  # Include HTTP response code
-        "-e", "http.user_agent",  # Include user agent
+     #   "-e", "frame.time",  # Add frame time
+     #   "-e", "ip.dst",
+     #   "-e", "ip.src",
+     #   "-e", "tcp.dstport",
+        "-e", "tcp.srcport",
+     #   "-e", "tcp.window_size_value",
+        "-e", "tcp.flags",
     ]
 
     # Open CSV file for writing
     with open("http_traffic.csv", "w", newline="") as csvfile:
-        fieldnames = ["date", "time", "ip.dst", "ip.src", "http.request.method", "http.request.uri", "http.response.code", "http.user_agent"]  # Define CSV header field names
+        fieldnames = ["tcp.srcport", "tcp.flags"]  # Define CSV header field names
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
         # Write CSV header
@@ -49,7 +49,7 @@ def capture_http_traffic():
                     
                     date_str = fields[0]
                     time_str = fields[1]
-                    row = {"date": fields[0],"time": fields[1], "ip.dst": fields[2], "ip.src": fields[3], "http.request.method": fields[4], "http.request.uri": fields[5], "http.response.code": fields[6], "http.user_agent": fields[7]}
+                    row = {"tcp.srcport": fields[0],  "tcp.flags": fields[1]}
                     writer.writerow(row)
                     csvfile.flush()  # Flush the buffer to ensure data is written to the file
                 time.sleep(5)  # Sleep for 5 seconds before capturing again
