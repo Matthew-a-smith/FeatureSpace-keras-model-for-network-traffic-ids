@@ -1,10 +1,26 @@
 import os
 from flask import Flask, render_template, request, jsonify
 import data_processing_script as dps
-import data_processing_script_2 as dps2
-import http_model as http
 import json
+import tensorflow as tf
+
 app = Flask(__name__)
+
+# Load the models outside of the functions
+nmap_1 = "Models/Inferance/NMAP-inference_model.keras"
+nmap_2 = "Models/Inferance/NMAP-inference_model.keras"
+meterpreter = "Models/Inferance/meter-preter-inference_model.keras"
+metasploit = "Models/Inferance/meter-preter-movement-inference_model.keras"
+http_model = "Models/Inferance/http-traffic.keras"
+
+
+loaded_models = {
+    '1': tf.keras.models.load_model(nmap_1),
+    '2': tf.keras.models.load_model(nmap_2),
+    '3': tf.keras.models.load_model(meterpreter),  
+    '4': tf.keras.models.load_model(metasploit),
+    '5': tf.keras.models.load_model(http_model)
+}
 
 @app.route('/')
 def index():
@@ -24,28 +40,16 @@ def process_pcap():
     file.save(filename)
 
     try:
-        if output_option == '1':
-            csv_file, predictions_file = dps.process_pcap_to_csv(filename)
-            with open(predictions_file) as f:
-                full_json_data = json.load(f)
-        elif output_option == '2':
-            csv_file, json_file = dps.process_pcap_to_csv1(filename)
-            with open(json_file) as f:
-                full_json_data = json.load(f)
-        elif output_option == '3':
-            csv_file, predictions_file = dps2.process_pcap_to_csv(filename)
-            with open(predictions_file) as f:
-                full_json_data = json.load(f)
-        elif output_option == '4':
-            csv_file, json_file = dps2.process_pcap_to_csv2(filename)
-            with open(json_file) as f:
-                full_json_data = json.load(f)
-        elif output_option == '5':
-            csv_file, predictions_file = http.process_pcap_to_csv3(filename)
-            with open(predictions_file) as f:
-                full_json_data = json.load(f)
+        if output_option in ['1', '3', '5']:
+            csv_file, predictions_file = dps.process_pcap_to_csv(filename, loaded_models[output_option])
+        elif output_option in ['2', '4']:
+            csv_file, predictions_file = dps.process_pcap_to_csv1(filename, loaded_models[output_option])
+            # Assuming http model loading and processing is done within the http module
         else:
             return jsonify({'error': 'Invalid output option'})
+        
+        with open(predictions_file) as f:
+            full_json_data = json.load(f)
         
         return jsonify({'full_json_data': full_json_data})
     
