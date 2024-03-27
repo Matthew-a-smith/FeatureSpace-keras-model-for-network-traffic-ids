@@ -35,14 +35,19 @@ across your network without the scan mixed in yet.
 I created another script called capture.py and this is what i used to capture my normal traffic, it uses the same tshark feilds as my processing script,
 but collects the data and saves it to csv as it runs so i dont  have to run wireshark and rerun the processing script.
 
-(ITS EAISER TO SINGLE OUT MY SPECIFC IP ADDRESS FOR MY NMAP THRU WIRESHARK AND JUST GET THAT DATA ASCOTIED WITH,
- ITS REALLY IMPORTANT NOT TO CONTAMANTE YOUR DATA WITH DIFFRENT VALUES OUTSIDE OF WHAT YOU WANT TO CAPTURE (AKA NORMAL TRAFFIC MIXED IN WITH THE SCAN))
-
 After getting the data and merging it together with merge.py, it will create the new label coloumn that has the binary encodeing,
 for the nmap scan.
 
-Since im not usieng a huge data set the the labled data was appended to the bottom to the bottom of my normal traffic,
+merge.py
+![merge](https://github.com/Matthew-a-smith/capstone-project/assets/109995724/31c94e81-0146-4e79-a783-d055a4977d43)
+
+
+Since im not useing a huge data set the the labled data was appended to the bottom to the bottom of my normal traffic,
 then i would go into the csv and manually mix the data up with the nmap scan.
+
+Output datasest
+![data--set](https://github.com/Matthew-a-smith/capstone-project/assets/109995724/616adaab-819a-49e8-89a5-638faeff6bd9)
+
 
 The file path and model parametres are configured thru the config.yaml make sure you change the values of,
 feature space with the correct coloumn names from your data and adjust the feilds that are more important for the model,
@@ -55,6 +60,19 @@ this way you dont have to test the models on a full csv file instead you can jus
 to test the models output on diffrent data more easier.
 
 the 3 test with csv scripts are just takeing the newly created model and createing diffrent outputs of the data from the model.
+
+FlaskAPP:
+
+I combined all the fucntions from the scripts that I just disscused into a flask app Were the backend consits of useing the diffrent models to parse any pcap or pcapng file.
+
+Just upload the pcap file to the main webapge of the flask apilication and choose the model you wish to use. Adding new models is straight forward as well after creaeteng said model useing the steps above just add the file path into the main app.py script and make a few slight adjuisments in the index.html to load the model.
+
+Load new model app.py
+
+ ![Screenshot_2024-03-27_08-49-37](https://github.com/Matthew-a-smith/capstone-project/assets/109995724/2c05f044-e29b-49fa-8c9e-6c5f0e93e1a0)
+
+index.html
+![Screenshot_2024-03-27_08-50-56](https://github.com/Matthew-a-smith/capstone-project/assets/109995724/f53d9d48-10cb-418c-8245-dd87c7b19975)
 
 
 
