@@ -1,0 +1,167 @@
+[
+    {
+        "Index": 1,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:09:23.111342351 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 45102,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 269,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 4,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:09:42.445747127 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 45102,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 269,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 6,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:09:52.483977528 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 45102,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 269,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 8,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:10:02.533944747 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 45102,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 269,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 10,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:10:07.681771739 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 45102,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0011",
+            "tcp.window_size_value": 269,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 31,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:07.951089473 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0012",
+            "tcp.window_size_value": 65535,
+            "tcp.options.mss_val": 1412
+        }
+    },
+    {
+        "Index": 35,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:08.007667254 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 261,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 36,
+        "Prediction": 99.99999403953552,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:08.007667619 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0018",
+            "tcp.window_size_value": 261,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 41,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:18.150452559 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 261,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 43,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:28.390427470 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 261,
+            "tcp.options.mss_val": 0
+        }
+    },
+    {
+        "Index": 45,
+        "Prediction": 100.0,
+        "Details": {
+            "date": "Mar 23",
+            "time": " 2024 15:11:38.634131422 EDT",
+            "ip.dst": "192.168.4.133",
+            "ip.src": "34.107.221.82",
+            "tcp.dstport": 59320,
+            "tcp.srcport": 80,
+            "tcp.flags": "0x0010",
+            "tcp.window_size_value": 261,
+            "tcp.options.mss_val": 0
+        }
+    }
+]
